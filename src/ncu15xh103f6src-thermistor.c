@@ -8,6 +8,7 @@
 /* Includes
  * --------------------------------------------*/
 #include "ncu15xh103f6src-thermistor.h"
+#include <math.h>
 
 /* Private variables
  * --------------------------------------------*/
@@ -21,7 +22,7 @@ float Ntc_Tmp_Raw;
 uint16_t Ntc_R;
 
 /* R1 resistance */
-#define NTC_UP_R 8624.2f
+#define NTC_UP_R 10000.0f
 
 /* constants of Steinhart-Hart equation, based on datasheet */ 
 #define A 0.0009020459061f
@@ -46,11 +47,18 @@ float ADC_Thermistor_Read(ADC_HandleTypeDef *adc)
   HAL_ADC_Start_IT(adc);
 
   // calc. ntc resistance
-  Ntc_R = ((NTC_UP_R)/((4095.0/AD_RES) - 1));
+  Ntc_R = ((NTC_UP_R)/((160095.0/AD_RES) - 1));
   // temp
   float Ntc_Ln = log(Ntc_R);
   // calc. temperature
   Ntc_Tmp = (1.0/(A + B*Ntc_Ln + C*Ntc_Ln*Ntc_Ln*Ntc_Ln)) - 273.15;
 
-  return (Ntc_Tmp)
+  return (Ntc_Tmp);
+}
+
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+    // Read & Update The ADC Result
+    AD_RES = HAL_ADC_GetValue(&hadc1);
 }

@@ -16,6 +16,9 @@
 extern "C" {
 #endif
 
+
+#include <adc.h>
+
 /* Private defines
  * --------------------------------------------*/
 
