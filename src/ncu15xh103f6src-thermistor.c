@@ -13,6 +13,8 @@
 /* Private variables
  * --------------------------------------------*/
 
+#define STM32_ANALOG_RESOLUTION 65535.0f
+
 /* adc vars */
 uint32_t AD_RES;
 
@@ -47,7 +49,7 @@ float ADC_Thermistor_Read(ADC_HandleTypeDef *adc)
   HAL_ADC_Start_IT(adc);
 
   // calc. ntc resistance
-  Ntc_R = ((NTC_UP_R)/((160095.0/AD_RES) - 1));
+  Ntc_R = ((NTC_UP_R)/((STM32_ANALOG_RESOLUTION/AD_RES) - 1));  //16 bit resolution
   // temp
   float Ntc_Ln = log(Ntc_R);
   // calc. temperature
