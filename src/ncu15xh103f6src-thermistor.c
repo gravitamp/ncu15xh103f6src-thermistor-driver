@@ -12,9 +12,7 @@
 
 /* Private variables
  * --------------------------------------------*/
-
 #define STM32_ANALOG_RESOLUTION 65535.0f
-
 /* adc vars */
 uint32_t AD_RES;
 
@@ -24,7 +22,7 @@ float Ntc_Tmp_Raw;
 uint16_t Ntc_R;
 
 /* R1 resistance */
-#define NTC_UP_R 10000.0f
+#define NTC_UP_R 8.6242f
 
 /* constants of Steinhart-Hart equation, based on datasheet */ 
 #define A 0.0009020459061f
@@ -45,11 +43,13 @@ void ADC_Thermistor_Init(ADC_HandleTypeDef *adc)
 
 float ADC_Thermistor_Read(ADC_HandleTypeDef *adc)
 {
-  // Start ADC Conversion
-  HAL_ADC_Start_IT(adc);
+  // Poll ADC1 Perihperal & TimeOut = 1mSec
+   HAL_ADC_PollForConversion(adc, 1);
+  // Read The ADC Conversion Result & Map It To PWM DutyCycle
+   AD_RES = HAL_ADC_GetValue(adc);
 
   // calc. ntc resistance
-  Ntc_R = ((NTC_UP_R)/((STM32_ANALOG_RESOLUTION/AD_RES) - 1));  //16 bit resolution
+  Ntc_R = ((NTC_UP_R)/((STM32_ANALOG_RESOLUTION/AD_RES) - 1));
   // temp
   float Ntc_Ln = log(Ntc_R);
   // calc. temperature
