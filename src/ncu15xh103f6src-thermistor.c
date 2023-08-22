@@ -57,10 +57,3 @@ float ADC_Thermistor_Read(ADC_HandleTypeDef *adc)
 
   return (Ntc_Tmp);
 }
-
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-    // Read & Update The ADC Result
-    AD_RES = HAL_ADC_GetValue(&hadc1);
-}
