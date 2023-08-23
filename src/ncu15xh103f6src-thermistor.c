@@ -33,15 +33,19 @@ uint16_t Ntc_R;
  * --------------------------------------------*/
 
 void ADC_Thermistor_Init(ADC_HandleTypeDef *adc)
-{
-  // ADC calibration
+{  // ADC calibration
   HAL_ADCEx_Calibration_Start(adc, ADC_CALIB_OFFSET_LINEARITY, ADC_SINGLE_ENDED);
 }
 
 float ADC_Thermistor_Read(ADC_HandleTypeDef *adc)
 {
   // Start ADC Conversion
-  HAL_ADC_Start_IT(&hadc1);
+  HAL_ADC_Start(adc);
+  // Poll ADC1 Perihperal & TimeOut = 1mSec
+   HAL_ADC_PollForConversion(adc, 1);
+  // Read The ADC Conversion Result & Map It To PWM DutyCycle
+   AD_RES = HAL_ADC_GetValue(adc);
+   HAL_ADC_Stop(adc);
   // calc. ntc resistance
   Ntc_R = ((NTC_UP_R)/((STM32_ANALOG_RESOLUTION/AD_RES) - 1));
   // temp
@@ -51,10 +55,4 @@ float ADC_Thermistor_Read(ADC_HandleTypeDef *adc)
 //  HAL_ADC_Stop(adc);
 
   return (Ntc_Tmp);
-}
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-    // Read & Update The ADC Result
-    AD_RES = HAL_ADC_GetValue(&hadc1);
 }
