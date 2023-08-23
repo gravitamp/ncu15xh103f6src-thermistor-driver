@@ -22,38 +22,39 @@ float Ntc_Tmp_Raw;
 uint16_t Ntc_R;
 
 /* R1 resistance */
-#define NTC_UP_R 8.6242f
+#define NTC_UP_R 1000.0f //8624.2f
 
 /* constants of Steinhart-Hart equation, based on datasheet */ 
-#define A 0.0009020459061f
-#define B 0.0002488731513f
-#define C 0.0000002044806163f
+#define A 0.9017477480e-3f
+#define B 2.489190310e-4f
+#define C 2.043213857e-7f
 
 /* Public function implementations
  * --------------------------------------------*/
 
 void ADC_Thermistor_Init(ADC_HandleTypeDef *adc)
 {
-  // Start ADC Conversion
-     HAL_ADC_Start(adc);
-
   // ADC calibration
   HAL_ADCEx_Calibration_Start(adc, ADC_CALIB_OFFSET_LINEARITY, ADC_SINGLE_ENDED);
 }
 
 float ADC_Thermistor_Read(ADC_HandleTypeDef *adc)
 {
-  // Poll ADC1 Perihperal & TimeOut = 1mSec
-   HAL_ADC_PollForConversion(adc, 1);
-  // Read The ADC Conversion Result & Map It To PWM DutyCycle
-   AD_RES = HAL_ADC_GetValue(adc);
-
+  // Start ADC Conversion
+  HAL_ADC_Start_IT(&hadc1);
   // calc. ntc resistance
   Ntc_R = ((NTC_UP_R)/((STM32_ANALOG_RESOLUTION/AD_RES) - 1));
   // temp
   float Ntc_Ln = log(Ntc_R);
   // calc. temperature
   Ntc_Tmp = (1.0/(A + B*Ntc_Ln + C*Ntc_Ln*Ntc_Ln*Ntc_Ln)) - 273.15;
+//  HAL_ADC_Stop(adc);
 
   return (Ntc_Tmp);
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+    // Read & Update The ADC Result
+    AD_RES = HAL_ADC_GetValue(&hadc1);
 }
