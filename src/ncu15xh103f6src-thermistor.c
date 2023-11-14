@@ -54,5 +54,5 @@ float ADC_Thermistor_Read(ADC_HandleTypeDef *adc)
   Ntc_Tmp = (1.0/(A + B*Ntc_Ln + C*Ntc_Ln*Ntc_Ln*Ntc_Ln)) - 273.15;
 //  HAL_ADC_Stop(adc);
 
-  return (Ntc_Tmp);
+  return (Ntc_Tmp/2);
 }
