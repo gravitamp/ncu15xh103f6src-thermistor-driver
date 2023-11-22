@@ -22,7 +22,7 @@ float Ntc_Tmp_Raw;
 uint16_t Ntc_R;
 
 /* R1 resistance */
-#define NTC_UP_R 1000.0f //8624.2f
+#define NTC_UP_R 8624.2f //8624.2f
 
 /* constants of Steinhart-Hart equation, based on datasheet */ 
 #define A 0.9017477480e-3f
@@ -47,12 +47,12 @@ float ADC_Thermistor_Read(ADC_HandleTypeDef *adc)
    AD_RES = HAL_ADC_GetValue(adc);
    HAL_ADC_Stop(adc);
   // calc. ntc resistance
-  Ntc_R = ((NTC_UP_R)/((STM32_ANALOG_RESOLUTION/AD_RES) - 1));
+  Ntc_R = ((NTC_UP_R)*((STM32_ANALOG_RESOLUTION/AD_RES) - 1));
   // temp
   float Ntc_Ln = log(Ntc_R);
   // calc. temperature
   Ntc_Tmp = (1.0/(A + B*Ntc_Ln + C*Ntc_Ln*Ntc_Ln*Ntc_Ln)) - 273.15;
 //  HAL_ADC_Stop(adc);
 
-  return (Ntc_Tmp/2);
+  return (Ntc_Tmp);
 }
