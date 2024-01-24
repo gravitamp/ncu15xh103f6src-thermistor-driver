@@ -18,6 +18,7 @@ extern "C" {
 
 
 #include <adc.h>
+#include <utils/helper.h>
 
 /* Private defines
  * --------------------------------------------*/
@@ -42,11 +43,20 @@ extern "C" {
   * @}
   */
 
+
+#define LCDTEMP_SAMPLE_SZ 150U
+
 /* Public function prototypes
  * --------------------------------------------*/
 
 void ADC_Thermistor_Init(ADC_HandleTypeDef *adc);
 float ADC_Thermistor_Read(ADC_HandleTypeDef *adc);
+
+static struct {
+  uint16_t value;
+  sampler_t sampler;
+  float buffer[LCDTEMP_SAMPLE_SZ];
+} lcdTemperature = { .value = 0, .sampler = { 0 }, .buffer = { 0 },  };
 
 #ifdef __cplusplus
 }
